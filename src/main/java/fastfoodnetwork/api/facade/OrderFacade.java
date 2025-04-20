@@ -7,6 +7,8 @@ import fastfoodnetwork.query.dto.OrderDetailsDTO;
 import fastfoodnetwork.query.dto.OrderStatisticsDTO;
 import fastfoodnetwork.query.service.OrderQueryService;
 
+import java.util.List;
+
 public class OrderFacade {
     private final CommandBus commandBus;
     private final OrderQueryService queryService;
@@ -42,6 +44,9 @@ public class OrderFacade {
 
     public OrderDetailsDTO getOrderDetails(String orderId) {
         return queryService.getOrderDetails(orderId);
+    }
+    public List<OrderDetailsDTO> getAllOrderDetails(){
+        return queryService.getAllOrderDetails();
     }
 
     public OrderStatisticsDTO getOrderStatistics() {

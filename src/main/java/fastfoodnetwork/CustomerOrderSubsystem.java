@@ -1,5 +1,6 @@
 package fastfoodnetwork;
 
+import fastfoodnetwork.api.console.ConsoleInterface;
 import fastfoodnetwork.api.facade.OrderFacade;
 import fastfoodnetwork.command.command.*;
 import fastfoodnetwork.command.handler.*;
@@ -18,11 +19,11 @@ import java.util.List;
 public class CustomerOrderSubsystem {
     public static void main(String[] args) {
         try {
-            // Initialize repositories
+
             OrderRepository orderRepository = new OrderRepository();
             OrderViewRepository orderViewRepository = new OrderViewRepository();
 
-            // Initialize command bus and handlers
+
             CommandBus commandBus = new CommandBus();
             commandBus.register(CreateOrderCommand.class, new CreateOrderCommandHandler(orderRepository));
             commandBus.register(AddDishToOrderCommand.class, new AddDishToOrderCommandHandler(orderRepository));
@@ -31,15 +32,15 @@ public class CustomerOrderSubsystem {
             commandBus.register(UpdateDishStatusCommand.class, new UpdateDishStatusCommandHandler(orderRepository));
             commandBus.register(CompleteOrderCommand.class, new CompleteOrderCommandHandler(orderRepository));
 
-            // Initialize event handler
+
             OrderEventHandler eventHandler = new OrderEventHandler(orderViewRepository);
             EventBus.getInstance().register(eventHandler);
 
-            // Initialize query service and facade
+
             OrderQueryService queryService = new OrderQueryService(orderViewRepository);
             OrderFacade facade = new OrderFacade(commandBus, queryService);
 
-            // Example usage
+
             facade.createOrder();
             List<Order> orders = orderRepository.findAll();
             if (orders.isEmpty()) {
@@ -52,7 +53,7 @@ public class CustomerOrderSubsystem {
             facade.updateDishStatus(orderId, "DISH001", DishStatus.IN_PREPARATION);
             facade.updateDishStatus(orderId, "DISH001", DishStatus.READY);
             OrderDetailsDTO details = facade.getOrderDetails(orderId);
-            System.out.printf("Order %s is %s with %s \n",details.getOrderId(), details.getStatus(),details.getDishes().get(0).toString());
+            System.out.printf("Order %s is %s with %s \n", details.getOrderId(), details.getStatus(), details.getDishes().get(0).toString());
             facade.completeOrder(orderId);
 
 
@@ -62,6 +63,12 @@ public class CustomerOrderSubsystem {
             System.out.println("Total Orders: " + stats.getTotalOrders());
             System.out.println("Average Dishes Per Order: " + stats.getAverageDishesPerOrder());
             System.out.println("Completed Orders: " + stats.getCompletedOrders());
+
+
+            ConsoleInterface console = new ConsoleInterface(facade);
+            console.start();
+
+
         } catch (Exception e) {
             System.err.println("Error during execution: " + e.getMessage());
             e.printStackTrace();
